@@ -1,34 +1,34 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import StatusCode from "http-status-codes";
 import * as yup from "yup";
+import { validation } from "../../shared/middlewares";
 
 interface ICidade {
   nome: string;
-  estado: string
+  estado: string;
 }
 
-const bodyValidation: yup.Schema<ICidade> = yup.object().shape({
-  nome: yup.string().required().min(3),
-  estado: yup.string().required().min(3),
-});
+interface IFilter {
+  filter?: string;
+  limit?: number;
+}
+
+export const createValidation = validation((getSchema) => ({
+  body: getSchema<ICidade>(yup.object().shape({
+    nome: yup.string().required().min(3),
+    estado: yup.string().required().min(3),
+  })),
+  query: getSchema<IFilter>(yup.object().shape({
+    filter: yup.string().required().min(3),
+  })),
+}));
+
 
 export const create = async (
   request: Request<{}, {}, ICidade>,
   response: Response
 ) => {
-  let validatedData: ICidade | undefined = undefined;
-
-  try {
-    await bodyValidation.validate(request.body);
-  } catch (error) {
-    const yupError = error as yup.ValidationError;
-    return response.status(StatusCode.BAD_REQUEST).json({
-      errors: {
-        default: yupError.message,
-      },
-    });
-  }
-
-  console.log(validatedData);
+  console.log(request.body);
   return response.send("Create!");
 };
+ 

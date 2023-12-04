@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { CidadesController } from './../controllers/cidades'
+import { CidadesController } from "./../controllers/cidades";
 
 const router = Router();
 
@@ -8,7 +8,10 @@ router.get("/", (_, response) => {
   return response.send("Olá, DEV!");
 });
 
-router.post("/cidades", CidadesController.create)
-
+router.post(
+  "/cidades",
+  CidadesController.createValidation,
+  CidadesController.create
+);
 
 export { router };
